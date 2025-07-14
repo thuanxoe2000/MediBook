@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Đăng ký tài khoản</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <style>
+      #overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 9999;
+      }
+      .overlay-background {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.4);
+      }
+      .overlay-spinner {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container mt-5">
+      <h3 class="mb-4 text-center">Đăng ký tài khoản</h3>
+      <div class="w-50 mx-auto">
+        <div class="form-group">
+          <label>Họ và tên</label>
+          <input type="text" id="name" class="form-control" />
+          <small id="name-error" class="text-danger"></small>
+        </div>
+
+        <div class="form-group">
+          <label>Email</label>
+          <input type="text" id="email" class="form-control" />
+          <small id="email-error" class="text-danger"></small>
+        </div>
+
+        <div class="form-group">
+          <label>Giới tính</label>
+          <select id="gender" class="form-control">
+            <option value="">-- Chọn giới tính --</option>
+            <option value="MALE">Nam</option>
+            <option value="FEMALE">Nữ</option>
+            <option value="OTHER">Khác</option>
+          </select>
+          <small id="gender-error" class="text-danger"></small>
+        </div>
+
+        <div class="form-group">
+          <label>Số điện thoại</label>
+          <input type="text" id="phoneNumber" class="form-control" />
+          <small id="phoneNumber-error" class="text-danger"></small>
+        </div>
+
+        <div class="form-group">
+          <label>Địa chỉ</label>
+          <input type="text" id="address" class="form-control" />
+          <small id="address-error" class="text-danger"></small>
+        </div>
+
+        <div class="form-group">
+          <label>Mật khẩu</label>
+          <input type="password" id="password" class="form-control" />
+          <small id="password-error" class="text-danger"></small>
+        </div>
+
+        <div class="form-group">
+          <label>Nhập lại mật khẩu</label>
+          <input type="password" id="confirmPassword" class="form-control" />
+          <small id="confirmPassword-error" class="text-danger"></small>
+        </div>
+
+        <button type="button" id="submit" class="btn btn-success w-100 mt-2">
+          Đăng ký
+        </button>
+        <div id="form-success" class="text-success mt-3"></div>
+      </div>
+    </div>
+
+    <!-- Overlay loading -->
+    <div id="overlay" style="display: none">
+      <div class="overlay-background"></div>
+      <div class="overlay-spinner">
+        <div class="spinner-border text-light" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+      </div>
+    </div>
+    <script src="js/signup.js"></script>
+  </body>
+</html>
