@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Đăng ký thành công</title>
+    <style>
+      body {
+        font-family: Arial;
+        text-align: center;
+        margin-top: 100px;
+      }
+      .box {
+        background: #e0f7fa;
+        padding: 30px;
+        border-radius: 10px;
+        display: inline-block;
+      }
+      h2 {
+        color: #00796b;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="box">
+      <h2>🎉 Đăng ký thành công!</h2>
+      <p>
+        Một email xác minh đã được gửi đến <span th:text="${email}"></span>.
+      </p>
+      <p>
+        Vui lòng kiểm tra hộp thư của bạn và click vào link để hoàn tất đăng ký.
+      </p>
+    </div>
+  </body>
+</html>

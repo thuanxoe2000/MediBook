@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Home</title>
+
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- Bootstrap Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+    />
+    <!-- Bootstrap JS -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+      defer
+    ></script>
+
+    <style>
+      .hospital-box {
+        border: 1px solid #dee2e6;
+        border-radius: 10px;
+        padding: 1rem 1.2rem;
+        margin-bottom: 1.2rem;
+        background-color: #fff;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+        font-size: 0.95rem;
+      }
+
+      .hospital-box p {
+        margin-bottom: 0.25rem;
+      }
+
+      .description-wrapper {
+        overflow: hidden;
+        transition: height 0.3s ease;
+        height: 0;
+        margin-top: 0.3rem;
+      }
+
+      .toggle-icon {
+        cursor: pointer;
+        font-size: 1rem;
+        transition: transform 0.3s;
+      }
+
+      .toggle-icon.rotate {
+        transform: rotate(180deg);
+      }
+
+      .toggle-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 0.2rem;
+      }
+
+      .btn-sm {
+        padding: 0.25rem 0.6rem;
+        font-size: 0.85rem;
+      }
+    </style>
+  </head>
+
+  <body class="container mt-4">
+    <div class="position-absolute top-0 end-0 m-3">
+      <i
+        id="menu-icon"
+        class="bi bi-person-circle fs-3 text-secondary"
+        role="button"
+      ></i>
+    </div>
+
+    <input
+      type="text"
+      id="searchInput"
+      placeholder="Tìm bệnh viện theo tên, khoa hoặc địa chỉ"
+      class="form-control my-3"
+    />
+    <div id="hospitalList"></div>
+
+    <script>
+      // 👉 Lấy token từ URL nếu vừa login Google thành công
+      const urlParams = new URLSearchParams(window.location.search);
+      const tokenFromUrl = urlParams.get("token");
+      const refreshTokenFromUrl = urlParams.get("refresh");
+
+      if (tokenFromUrl && refreshTokenFromUrl) {
+        localStorage.setItem("token", tokenFromUrl);
+        localStorage.setItem("refreshToken", refreshTokenFromUrl);
+        // 👉 Xoá token khỏi thanh địa chỉ
+        window.history.replaceState(
+          {},
+          document.title,
+          window.location.pathname
+        );
+      }
+
+      const token = localStorage.getItem("token");
+      const refreshToken = localStorage.getItem("refreshToken");
+
+      window.onload = () => {
+        loadAllHospitals();
+      };
+
+      document
+        .getElementById("menu-icon")
+        .addEventListener("click", async () => {
+          if (!token || !refreshToken) {
+            window.location.href = "login.html";
+            return;
+          }
+
+          try {
+            const res = await fetch("http://localhost:8080/auth/check-token", {
+              headers: { Authorization: "Bearer " + token },
+            });
+
+            if (res.status === 401) {
+              const refreshRes = await fetch(
+                "http://localhost:8080/auth/refresh",
+                {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ refreshToken }),
+                }
+              );
+
+              if (!refreshRes.ok) throw new Error("Phiên đăng nhập đã hết hạn");
+
+              const { accessToken } = await refreshRes.json();
+              localStorage.setItem("token", accessToken);
+              window.location.href = "user.html";
+            } else {
+              window.location.href = "user.html";
+            }
+          } catch (err) {
+            localStorage.clear();
+            window.location.href = "login.html";
+          }
+        });
+
+      const searchInput = document.getElementById("searchInput");
+      const hospitalList = document.getElementById("hospitalList");
+
+      function renderHospitals(data) {
+        hospitalList.innerHTML = "";
+        const allDescWrappers = [];
+
+        data.forEach((e) => {
+          const box = document.createElement("div");
+          box.className = "hospital-box";
+
+          const name = document.createElement("h6");
+          name.textContent = e.name;
+          name.classList.add("mb-1");
+
+          const address = document.createElement("p");
+          address.textContent = e.address;
+
+          const workingTime = document.createElement("p");
+          workingTime.textContent = e.startTime + " - " + e.endTime;
+
+          const bottomRow = document.createElement("div");
+          bottomRow.className =
+            "d-flex justify-content-between align-items-center";
+
+          const cost = document.createElement("p");
+          cost.textContent = e.cost + " VND";
+          cost.classList.add("mb-0");
+
+          const accessBtn = document.createElement("button");
+          accessBtn.className = "btn btn-sm btn-primary";
+          accessBtn.textContent = "Truy cập";
+          accessBtn.onclick = () => {
+            window.location.href = `hospital-detail.html?id=${e.id}`;
+          };
+
+          bottomRow.appendChild(cost);
+          bottomRow.appendChild(accessBtn);
+
+          const toggle = document.createElement("div");
+          toggle.innerHTML = `<i class="bi bi-chevron-down toggle-icon"></i>`;
+          toggle.className = "toggle-container";
+
+          const descWrapper = document.createElement("div");
+          descWrapper.className = "description-wrapper";
+
+          const description = document.createElement("p");
+          description.className = "description text-muted";
+          description.textContent = e.description;
+
+          descWrapper.appendChild(description);
+          allDescWrappers.push({
+            wrapper: descWrapper,
+            icon: toggle.querySelector("i"),
+          });
+
+          toggle.addEventListener("click", () => {
+            const isOpen =
+              descWrapper.style.height && descWrapper.style.height !== "0px";
+
+            allDescWrappers.forEach((entry) => {
+              if (entry.wrapper !== descWrapper) {
+                entry.wrapper.style.height = "0";
+                entry.icon.classList.remove("rotate");
+              }
+            });
+
+            if (isOpen) {
+              descWrapper.style.height = "0";
+              toggle.querySelector("i").classList.remove("rotate");
+            } else {
+              descWrapper.style.height = descWrapper.scrollHeight + "px";
+              toggle.querySelector("i").classList.add("rotate");
+            }
+          });
+
+          box.appendChild(name);
+          box.appendChild(address);
+          box.appendChild(workingTime);
+          box.appendChild(bottomRow);
+          box.appendChild(toggle);
+          box.appendChild(descWrapper);
+
+          hospitalList.appendChild(box);
+        });
+      }
+
+      async function loadAllHospitals() {
+        try {
+          const res = await fetch("http://localhost:8080/hospital/list");
+          const data = await res.json();
+          renderHospitals(data);
+        } catch (err) {
+          alert("Lỗi tải danh sách bệnh viện: " + err.message);
+        }
+      }
+
+      let debounceTimer = null;
+      searchInput.addEventListener("input", () => {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(async () => {
+          const keyword = searchInput.value.trim();
+          if (keyword === "") {
+            loadAllHospitals();
+            return;
+          }
+
+          try {
+            const res = await fetch(
+              `http://localhost:8080/hospital/search?keyword=${encodeURIComponent(
+                keyword
+              )}`
+            );
+            if (!res.ok) throw new Error(await res.text());
+            const data = await res.json();
+            renderHospitals(data);
+          } catch (err) {
+            alert(err.message);
+          }
+        }, 500);
+      });
+    </script>
+  </body>
+</html>

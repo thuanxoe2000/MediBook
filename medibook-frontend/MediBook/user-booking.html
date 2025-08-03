@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>User page</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <style>
+      #normal-user,
+      #doctor {
+        border: 1px solid #dee2e6;
+        border-radius: 10px;
+        padding: 20px;
+        background-color: #f8f9fa;
+      }
+      #pendingDiv,
+      #confirmDiv,
+      #cancelDiv,
+      #finished {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container my-4">
+      <!-- Username hiển thị -->
+      <div id="username" class="mb-4 fs-4 fw-bold text-primary"></div>
+
+      <div class="d-grid gap-2 mb-2">
+        <button id="pending" class="btn btn-outline-warning">Đang chờ</button>
+        <button id="confirm" class="btn btn-outline-primary">
+          Đã xác nhận
+        </button>
+        <button id="finish" class="btn btn-outline-success">
+          Đã hoàn thành
+        </button>
+        <button id="cancel" class="btn btn-outline-danger">Đã bị huỷ</button>
+      </div>
+
+      <div id="pendingDiv" class="mb-3"></div>
+      <div id="confirmDiv" class="mb-3"></div>
+      <div id="finished" class="mb-3"></div>
+      <div id="cancelDiv" class="mb-3"></div>
+    </div>
+    <script src="js/user-booking.js"></script>
+  </body>
+</html>
