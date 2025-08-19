@@ -86,10 +86,10 @@ public class AuthController {
         }
     }
 
-//    @GetMapping("/login")
-//    public void redirectToGoogle(HttpServletResponse response) throws IOException {
-//        response.sendRedirect("/oauth2/authorization/google");
-//    }
+    @GetMapping("/login")
+    public void redirectToGoogle(HttpServletResponse response) throws IOException {
+        response.sendRedirect("/oauth2/authorization/google");
+    }
 
     @PostMapping("/refresh")
     public ResponseEntity<?> refresh(@RequestBody Map<String, String> request) {
